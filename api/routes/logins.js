@@ -3,6 +3,19 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const Login = require('../models/login')
 
+router.route('/logar')
+    .get(function (req, res) {
+        Login.findOne({ login: req.body.login, senha: req.body.senha })
+            .exec()
+            .then(doc => {
+                if (doc._id)
+                    res.status(200).json(doc)
+                else
+                    res.status(404).json([])
+            })
+            .catch(() => { res.status(404).json([]) })
+    })
+
 router.post('/', (req, res, next) => {
     const login = new Login({
         _id: new mongoose.Types.ObjectId(),
