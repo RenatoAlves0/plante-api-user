@@ -14,7 +14,7 @@ router.post('/', (req, res, next) => {
     })
 
     plantacao.save()
-        .then(result => { res.status(201).json({ message: "Salvo com sucesso!" }) })
+        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: plantacao._id }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })
 

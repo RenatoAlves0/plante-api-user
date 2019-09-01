@@ -12,7 +12,7 @@ router.post('/', (req, res, next) => {
     })
 
     usuario.save()
-        .then(result => { res.status(201).json({ message: "Salvo com sucesso!" }) })
+        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: usuario._id }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })
 

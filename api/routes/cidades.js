@@ -11,7 +11,7 @@ router.post('/', (req, res, next) => {
     })
 
     cidade.save()
-        .then(result => { res.status(201).json({ message: "Salvo com sucesso!" }) })
+        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: cidade._id }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })
 
