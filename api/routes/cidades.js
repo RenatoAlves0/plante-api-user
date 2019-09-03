@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
 const Cidade = require('../models/cidade')
-const Estado = require('../models/estado')
 
 router.post('/', (req, res, next) => {
     const cidade = new Cidade({
