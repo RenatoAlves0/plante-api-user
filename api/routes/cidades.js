@@ -18,6 +18,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/', (req, res, next) => {
     Cidade.find()
+        .sort({ nome: 'asc' })
         .populate('estado')
         .exec()
         .then(docs => { res.status(200).json(docs) })
@@ -38,6 +39,7 @@ router.get('/:cidadeId', (req, res, next) => {
 router.route('/estado/:estadoId')
     .get(function (req, res) {
         Cidade.find()
+            .sort({ nome: 'asc' })
             .exec()
             .then(async (docs) => {
                 let cidades = []

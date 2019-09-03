@@ -18,6 +18,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/', (req, res, next) => {
     Estado.find()
+        .sort({ nome: 'asc' })
         .populate('pais')
         .exec()
         .then(docs => { res.status(200).json(docs) })

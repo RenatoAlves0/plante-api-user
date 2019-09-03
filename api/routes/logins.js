@@ -31,6 +31,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/', (req, res, next) => {
     Login.find()
+        .sort({ login: 'asc' })
         .populate('usuario')
         .exec()
         .then(docs => { res.status(200).json(docs) })

@@ -20,6 +20,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/', (req, res, next) => {
     Plantacao.find()
+        .sort({ nome: 'asc' })
         .populate('cidade usuario')
         .exec()
         .then(docs => { res.status(200).json(docs) })
