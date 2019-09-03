@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
 const Cidade = require('../models/cidade')
+const Estado = require('../models/estado')
 
 router.post('/', (req, res, next) => {
     const cidade = new Cidade({
@@ -24,6 +25,31 @@ router.get('/', (req, res, next) => {
 })
 
 router.get('/:cidadeId', (req, res, next) => {
+    Cidade.findById(req.params.cidadeId)
+        .populate('estado')
+        .exec()
+        .then(doc => {
+            if (doc) { res.status(200).json(doc) }
+            else res.status(404).json({ message: 'Registro não encontrado!' })
+        })
+        .catch(err => { res.status(500).json({ error: err }) })
+})
+
+router.route('/estado/:estadoId')
+    .get(function (req, res) {
+        Cidade.find()
+            .exec()
+            .then(async (docs) => {
+                let cidades = []
+                cidades.push(await docs.filter((obj) => obj.estado == req.params.estadoId))
+                res.status(200).json({ cidades })
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
+router.get('/cidadeId', (req, res, next) => {
     Cidade.findById(req.params.cidadeId)
         .populate('estado')
         .exec()
