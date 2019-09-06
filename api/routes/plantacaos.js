@@ -27,6 +27,21 @@ router.get('/', (req, res, next) => {
         .catch(err => { res.status(500).json({ error: err }) })
 })
 
+router.route('/usuario/:usuarioId')
+    .get(function (req, res) {
+        Plantacao.find()
+            .sort({ nome: 'asc' })
+            .exec()
+            .then(async (docs) => {
+                let plantacoes = []
+                plantacoes.push(await docs.filter((obj) => obj.usuario == req.params.usuarioId))
+                res.status(200).json(plantacoes[0])
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
 router.get('/:plantacaoId', (req, res, next) => {
     Plantacao.findById(req.params.plantacaoId)
         .populate('cidade usuario')
