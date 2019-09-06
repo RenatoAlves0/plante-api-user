@@ -30,8 +30,8 @@ router.get('/', (req, res, next) => {
 router.route('/usuario/:usuarioId')
     .get(function (req, res) {
         Plantacao.find()
-            .sort({ nome: 'asc' })
             .populate('cidade usuario')
+            .sort({ nome: 'asc' })
             .exec()
             .then(async (docs) => {
                 let plantacoes = []
