@@ -26,7 +26,6 @@ router.get('/', (req, res, next) => {
 router.route('/usuario/:usuarioId')
     .get(function (req, res) {
         PlantacaoPrincipal.find()
-            .populate('plantacao usuario')
             .exec()
             .then(async (docs) => {
                 let plantacoes = []
