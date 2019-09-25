@@ -7,8 +7,7 @@ const plantacao = mongoose.Schema({
     localizacao: { type: String, required: true },
     cidade: { type: mongoose.Schema.Types.ObjectId, ref: 'Cidade', required: true },
     usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
-    cor: { type: Number, required: false, default: 0 },
-    principal: { type: Boolean, required: false, default: false },
+    cor: { type: Number, required: false, default: 0 }
 })
 
 module.exports = mongoose.model('Plantacao', plantacao)
