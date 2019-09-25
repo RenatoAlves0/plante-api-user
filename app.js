@@ -10,6 +10,7 @@ const estadoRoutes = require('./api/routes/estados')
 const loginRoutes = require('./api/routes/logins')
 const paisRoutes = require('./api/routes/paiss')
 const plantacaoRoutes = require('./api/routes/plantacaos')
+const plantacaoPrincipalRoutes = require('./api/routes/plantacaoPrincipals')
 const usuarioRoutes = require('./api/routes/usuarios')
 
 mongoose.connect('mongodb+srv://plante-api-user:' +
@@ -42,6 +43,7 @@ app.use('/estados', estadoRoutes)
 app.use('/logins', loginRoutes)
 app.use('/paiss', paisRoutes)
 app.use('/plantacaos', plantacaoRoutes)
+app.use('/plantacaoPrincipals', plantacaoPrincipalRoutes)
 app.use('/usuarios', usuarioRoutes)
 
 app.use((req, res, next) => {
