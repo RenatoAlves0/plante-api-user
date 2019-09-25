@@ -11,7 +11,8 @@ router.post('/', (req, res, next) => {
         localizacao: req.body.localizacao,
         cidade: req.body.cidade,
         usuario: req.body.usuario,
-        cor: req.body.cor
+        cor: req.body.cor,
+        principal: req.body.principal
     })
 
     plantacao.save()
