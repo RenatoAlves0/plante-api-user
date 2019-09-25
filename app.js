@@ -3,6 +3,7 @@ const app = express()
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const mqtt = require('mqtt')
 
 const cidadeRoutes = require('./api/routes/cidades')
 const estadoRoutes = require('./api/routes/estados')
@@ -56,6 +57,25 @@ app.use((error, req, res, next) => {
             message: error.message
         }
     })
+})
+
+const client_mqtt = mqtt.connect('mqtt://test.mosquitto.org')
+const topico_sensores = 'plante_box_sensores(renalves.oli@gmail.com)'
+const topico_regador = 'plante_box_regador(renalves.oli@gmail.com)'
+
+client_mqtt.on('connect', function () {
+    client_mqtt.subscribe(topico_sensores, function (err) {
+        // if (!err) {
+        //     client_mqtt.publish(topico_sensores, 'Mensagem recebida com sucesso do MQTT!')
+        // }
+    })
+
+    client_mqtt.subscribe(topico_regador, function (err) { })
+})
+
+client_mqtt.on('message', function (topic, message) {
+    console.log(topic)
+    console.log(message.toString())
 })
 
 module.exports = app
