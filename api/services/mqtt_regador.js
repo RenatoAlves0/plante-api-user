@@ -21,8 +21,8 @@ client_mqtt.on('connect', async () => {
         .populate('plantacao')
         .exec()
         .then(docs => { plantacoes_aux = docs })
-    plantacoes_aux.forEach(item => {
-        axios.get('https://plante-api.herokuapp.com/plantas/' + item.plantacao.cultura)
+    plantacoes_aux.forEach(async item => {
+        await axios.get('https://plante-api.herokuapp.com/plantas/' + item.plantacao.cultura)
             .then(data => {
                 plantacao_aux.usuario = item.usuario
                 plantacao_aux.plantacao.t0 = data.data.clima.temperaturaMinima
@@ -33,14 +33,20 @@ client_mqtt.on('connect', async () => {
                 plantacao_aux.plantacao.uS1 = data.data.solo.umidadeMaxima
                 console.log(plantacao_aux)
             })
-        plantacoes.push(item.plantacao_aux)
+        await plantacoes.push(plantacao_aux)
         client_mqtt.subscribe(topico_sensores_c + item.usuario)
     })
 })
 
-client_mqtt.on('message', (topic, message) => {
-    client_mqtt.publish(topico_regador_c + topic.split('.')[1], 'Mensagem MQTT!')
-    console.log(message.toString())
-})
+regar = async (topic, message) => {
+    let p = await plantacoes.find(obj => obj.usuario == topic)
+    if (message.uS < p.plantacao.uS0)
+        client_mqtt.publish(topico_regador_c + topic, '1')
+    else {
+        client_mqtt.publish(topico_regador_c + topic, '0')
+    }
+}
 
-module.exports = client_mqtt
+client_mqtt.on('message', (topic, message) => {
+    regar(topic.split('.')[1], JSON.parse(message.toString()))
+})
