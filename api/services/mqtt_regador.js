@@ -3,21 +3,13 @@ const axios = require('axios')
 const client_mqtt = mqtt.connect('mqtt://test.mosquitto.org')
 const topico_sensores_c = 'plante_sensores_c.'
 const topico_regador_c = 'plante_regador_c.'
-const PlantacaoPrincipal = require('../models/plantacaoPrincipal')
+const topico_alertas = 'plante_alertas.'
+const plantacao_principal = require('../models/plantacaoPrincipal')
 let plantacoes = [], plantacoes_aux = []
 
 client_mqtt.on('connect', async () => {
-    let plantacao_aux = {
-        usuario: undefined, plantacao: {
-            t0: undefined,
-            t1: undefined,
-            u0: undefined,
-            u1: undefined,
-            uS0: undefined,
-            uS1: undefined
-        }
-    }
-    await PlantacaoPrincipal.find()
+    let plantacao_aux = { usuario: '', plantacao: { t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '' } }
+    await plantacao_principal.find()
         .populate('plantacao')
         .exec()
         .then(docs => { plantacoes_aux = docs })
@@ -31,7 +23,6 @@ client_mqtt.on('connect', async () => {
                 plantacao_aux.plantacao.u1 = data.data.clima.umidadeMaxima
                 plantacao_aux.plantacao.uS0 = data.data.solo.umidadeMinima
                 plantacao_aux.plantacao.uS1 = data.data.solo.umidadeMaxima
-                console.log(plantacao_aux)
             })
         await plantacoes.push(plantacao_aux)
         client_mqtt.subscribe(topico_sensores_c + item.usuario)
@@ -47,6 +38,29 @@ regar = async (topic, message) => {
     }
 }
 
+alertas = async (topic, message) => {
+    let m = { t: '', u: '', uS: '', l: '', c: '' }
+    let p = await plantacoes.find(obj => obj.usuario == topic)
+    if (message.t < p.plantacao.t0)
+        m.t = (p.plantacao.t0 - message.t).toFixed(2) + ' ºC abaixo do ideal'
+    else if (message.t > p.plantacao.t1)
+        m.t = (message.t - p.plantacao.t1).toFixed(2) + ' ºC acima do ideal'
+
+    if (message.u < p.plantacao.u0)
+        m.u = (p.plantacao.u0 - message.u).toFixed(2) + ' % abaixo do ideal'
+    else if (message.u > p.plantacao.u1)
+        m.u = (message.u - p.plantacao.u1).toFixed(2) + ' % acima do ideal'
+
+    if (message.uS < p.plantacao.uS0)
+        m.uS = (p.plantacao.uS0 - message.uS).toFixed(2) + ' % abaixo do ideal'
+    else if (message.uS > p.plantacao.uS1)
+        m.uS = (message.uS - p.plantacao.uS1).toFixed(2) + ' % acima do ideal'
+    client_mqtt.publish(topico_alertas + topic, m.toString())
+}
+
 client_mqtt.on('message', (topic, message) => {
-    regar(topic.split('.')[1], JSON.parse(message.toString()))
+    if (topic.split('.')[0] + '.' == topico_sensores_c) {
+        regar(topic.split('.')[1], JSON.parse(message.toString()))
+        alertas(topic.split('.')[1], JSON.parse(message.toString()))
+    }
 })
