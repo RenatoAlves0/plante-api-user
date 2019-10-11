@@ -55,7 +55,7 @@ alertas = async (topic, message) => {
         m.uS = (p.plantacao.uS0 - message.uS).toFixed(2) + ' % abaixo do ideal'
     else if (message.uS > p.plantacao.uS1)
         m.uS = (message.uS - p.plantacao.uS1).toFixed(2) + ' % acima do ideal'
-    client_mqtt.publish(topico_alertas + topic, m.toString())
+    client_mqtt.publish(topico_alertas + topic, JSON.stringify(m))
 }
 
 client_mqtt.on('message', (topic, message) => {
