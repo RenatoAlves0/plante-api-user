@@ -8,7 +8,7 @@ const plantacao_principal = require('../models/plantacaoPrincipal')
 let plantacoes = [], plantacoes_aux = []
 
 client_mqtt.on('connect', async () => {
-    let plantacao_aux = { usuario: '', plantacao: { t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '' } }
+    let plantacao_aux = { usuario: '', plantacao: { t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '', l0: '', l1: '' } }
     await plantacao_principal.find()
         .populate('plantacao')
         .exec()
@@ -16,6 +16,19 @@ client_mqtt.on('connect', async () => {
     plantacoes_aux.forEach(async item => {
         await axios.get('https://plante-api.herokuapp.com/plantas/' + item.plantacao.cultura)
             .then(data => {
+                // if (data.data.luz.intensidade == 'Sombra') {
+                //     plantacao_aux.plantacao.l0 = 0
+                //     plantacao_aux.plantacao.l1 = 20
+                // } else if (data.data.luz.intensidade == 'Fraca') {
+                //     plantacao_aux.plantacao.l0 = 20
+                //     plantacao_aux.plantacao.l1 = 40
+                // } else if (data.data.luz.intensidade == 'Média') {
+                //     plantacao_aux.plantacao.l0 = 40
+                //     plantacao_aux.plantacao.l1 = 70
+                // } else {
+                //     plantacao_aux.plantacao.l0 = 70
+                //     plantacao_aux.plantacao.l1 = 100
+                // }
                 plantacao_aux.usuario = item.usuario
                 plantacao_aux.plantacao.t0 = data.data.clima.temperaturaMinima
                 plantacao_aux.plantacao.t1 = data.data.clima.temperaturaMaxima
