@@ -55,19 +55,19 @@ alertas = async (topic, message) => {
     let m = { t: '', u: '', uS: '', l: '', c: '' }
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.t < p.plantacao.t0)
-        m.t = (p.plantacao.t0 - message.t).toFixed(1) + ' ºC\nabaixo'
+        m.t = (p.plantacao.t0 - message.t).toFixed(1) + ' ºC\n/-'
     else if (message.t > p.plantacao.t1)
-        m.t = (message.t - p.plantacao.t1).toFixed(1) + ' ºC\nacima'
+        m.t = (message.t - p.plantacao.t1).toFixed(1) + ' ºC\n/+'
 
     if (message.u < p.plantacao.u0)
-        m.u = (p.plantacao.u0 - message.u).toFixed(1) + ' %\nabaixo'
+        m.u = (p.plantacao.u0 - message.u).toFixed(1) + ' %\n/-'
     else if (message.u > p.plantacao.u1)
-        m.u = (message.u - p.plantacao.u1).toFixed(1) + ' %\nacima'
+        m.u = (message.u - p.plantacao.u1).toFixed(1) + ' %\n/+'
 
     if (message.uS < p.plantacao.uS0)
-        m.uS = (p.plantacao.uS0 - message.uS).toFixed(1) + ' %\nabaixo'
+        m.uS = (p.plantacao.uS0 - message.uS).toFixed(1) + ' %\n/-'
     else if (message.uS > p.plantacao.uS1)
-        m.uS = (message.uS - p.plantacao.uS1).toFixed(1) + ' %\nacima'
+        m.uS = (message.uS - p.plantacao.uS1).toFixed(1) + ' %\n/+'
     client_mqtt.publish(topico_alertas + topic, JSON.stringify(m))
 }
 
