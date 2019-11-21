@@ -47,17 +47,17 @@ client_mqtt.on('connect', async () => {
 saveAlertaTemperatura = (valor, usuario, plantacao) => {
     console.log('valor, usuario, plantacao')
     console.log(valor, usuario, plantacao)
-    const alertaTemperatura = new AlertaTemperatura({
-        _id: new mongoose.Types.ObjectId(),
-        data: Date.now(),
-        valor: valor,
-        plantacao: plantacao,
-        usuario: usuario
-    })
+    // const alertaTemperatura = new AlertaTemperatura({
+    //     _id: new mongoose.Types.ObjectId(),
+    //     data: Date.now(),
+    //     valor: valor,
+    //     plantacao: plantacao,
+    //     usuario: usuario
+    // })
 
-    alertaTemperatura.save()
-        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: alertaTemperatura._id }) })
-        .catch(err => { res.status(500).json({ error: err }) })
+    // alertaTemperatura.save()
+    //     .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: alertaTemperatura._id }) })
+    //     .catch(err => { res.status(500).json({ error: err }) })
 }
 
 regar = async (topic, message) => {
@@ -74,12 +74,12 @@ alertas = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.t < p.plantacao.t0) {
         m.t = (message.t - p.plantacao.t0).toFixed(1)
-        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
+        saveAlertaTemperatura(m.t, topic, p.plantacao)
         m.t = m.t + ' ºC'
     }
     else if (message.t > p.plantacao.t1) {
         m.t = (message.t - p.plantacao.t1).toFixed(1)
-        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
+        saveAlertaTemperatura(m.t, topic, p.plantacao)
         m.t = m.t + ' ºC'
     }
 
