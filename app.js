@@ -12,6 +12,11 @@ const paisRoutes = require('./api/routes/paiss')
 const plantacaoRoutes = require('./api/routes/plantacaos')
 const plantacaoPrincipalRoutes = require('./api/routes/plantacaoPrincipals')
 const usuarioRoutes = require('./api/routes/usuarios')
+const alertaLuminosidadeRoutes = require('./api/routes/alertaLuminosidades')
+const alertaTemperaturaRoutes = require('./api/routes/alertaTemperaturas')
+const alertaUmidadeRoutes = require('./api/routes/alertaUmidades')
+const alertaUmidadeSoloRoutes = require('./api/routes/alertaUmidadeSolos')
+const irrigacaoRoutes = require('./api/routes/irrigacaos')
 
 mongoose.connect('mongodb+srv://plante-api-user:' +
     process.env.MONGO_ATLAS_PW +
@@ -45,6 +50,11 @@ app.use('/paiss', paisRoutes)
 app.use('/plantacaos', plantacaoRoutes)
 app.use('/plantacaoPrincipals', plantacaoPrincipalRoutes)
 app.use('/usuarios', usuarioRoutes)
+app.use('/alertaLuminosidades', alertaLuminosidadeRoutes)
+app.use('/alertaTemperaturas', alertaTemperaturaRoutes)
+app.use('/alertaUmidades', alertaUmidadeRoutes)
+app.use('/alertaUmidadeSolos', alertaUmidadeSoloRoutes)
+app.use('/irrigacaos', irrigacaoRoutes)
 
 app.use((req, res, next) => {
     const error = new Error("Não encontrato!")
