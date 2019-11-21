@@ -72,7 +72,7 @@ alertas = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.t < p.plantacao.t0) {
         m.t = (message.t - p.plantacao.t0).toFixed(1)
-        this.saveAlertaTemperatura(m.t, topic, p.plantacao._id)
+        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
     }
     else if (message.t > p.plantacao.t1) {
