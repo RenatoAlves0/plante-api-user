@@ -10,7 +10,7 @@ const AlertaTemperatura = require('../models/alertaTemperatura')
 let plantacoes = [], plantacoes_aux = []
 
 client_mqtt.on('connect', async () => {
-    let plantacao_aux = { usuario: '', plantacao: { t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '', l0: '', l1: '' } }
+    let plantacao_aux = { usuario: '', plantacao: { _id: '', t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '', l0: '', l1: '' } }
     await PlantacaoPrincipal.find()
         .populate('plantacao')
         .exec()
@@ -31,10 +31,9 @@ client_mqtt.on('connect', async () => {
                 //     plantacao_aux.plantacao.l0 = 70
                 //     plantacao_aux.plantacao.l1 = 100
                 // }
-                console.log('item')
-                console.log(item)
-                
+
                 plantacao_aux.usuario = item.usuario
+                plantacao_aux.plantacao._id = item.plantacao._id
                 plantacao_aux.plantacao.t0 = data.data.clima.temperaturaMinima
                 plantacao_aux.plantacao.t1 = data.data.clima.temperaturaMaxima
                 plantacao_aux.plantacao.u0 = data.data.clima.umidadeMinima
@@ -77,12 +76,12 @@ alertas = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.t < p.plantacao.t0) {
         m.t = (message.t - p.plantacao.t0).toFixed(1)
-        saveAlertaTemperatura(m.t, topic, p.plantacao)
+        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
     }
     else if (message.t > p.plantacao.t1) {
         m.t = (message.t - p.plantacao.t1).toFixed(1)
-        saveAlertaTemperatura(m.t, topic, p.plantacao)
+        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
     }
 
