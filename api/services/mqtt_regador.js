@@ -4,12 +4,13 @@ const client_mqtt = mqtt.connect('mqtt://test.mosquitto.org')
 const topico_sensores_c = 'plante_sensores_c.'
 const topico_regador_c = 'plante_regador_c.'
 const topico_alertas = 'plante_alertas.'
-const plantacao_principal = require('../models/plantacaoPrincipal')
+const PlantacaoPrincipal = require('../models/plantacaoPrincipal')
+const AlertaTemperatura = require('../models/alertaTemperatura')
 let plantacoes = [], plantacoes_aux = []
 
 client_mqtt.on('connect', async () => {
     let plantacao_aux = { usuario: '', plantacao: { t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '', l0: '', l1: '' } }
-    await plantacao_principal.find()
+    await PlantacaoPrincipal.find()
         .populate('plantacao')
         .exec()
         .then(docs => { plantacoes_aux = docs })
@@ -42,6 +43,21 @@ client_mqtt.on('connect', async () => {
     })
 })
 
+saveAlertaTemperatura = (valor, usuario, plantacao) => {
+    console.log(valor, usuario, plantacao)
+    const alertaTemperatura = new AlertaTemperatura({
+        _id: new mongoose.Types.ObjectId(),
+        data: Date.now(),
+        valor: valor,
+        plantacao: plantacao,
+        usuario: usuario
+    })
+
+    alertaTemperatura.save()
+        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: alertaTemperatura._id }) })
+        .catch(err => { res.status(500).json({ error: err }) })
+}
+
 regar = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.uS < p.plantacao.uS0)
@@ -54,20 +70,38 @@ regar = async (topic, message) => {
 alertas = async (topic, message) => {
     let m = { t: '', u: '', uS: '', l: '', c: '' }
     let p = await plantacoes.find(obj => obj.usuario == topic)
-    if (message.t < p.plantacao.t0)
-        m.t = (p.plantacao.t0 - message.t).toFixed(1) + ' ºC/-'
-    else if (message.t > p.plantacao.t1)
-        m.t = (message.t - p.plantacao.t1).toFixed(1) + ' ºC/+'
+    if (message.t < p.plantacao.t0) {
+        m.t = (message.t - p.plantacao.t0).toFixed(1)
+        this.saveAlertaTemperatura(m.t, topic, p.plantacao._id)
+        m.t = m.t + ' ºC'
+    }
+    else if (message.t > p.plantacao.t1) {
+        m.t = (message.t - p.plantacao.t1).toFixed(1)
+        //post
+        m.t = m.t + ' ºC'
+    }
 
-    if (message.u < p.plantacao.u0)
-        m.u = (p.plantacao.u0 - message.u).toFixed(1) + ' %/-'
-    else if (message.u > p.plantacao.u1)
-        m.u = (message.u - p.plantacao.u1).toFixed(1) + ' %/+'
+    if (message.u < p.plantacao.u0) {
+        m.u = (message.u - p.plantacao.u0).toFixed(1)
+        //post
+        m.u = m.u + ' %'
+    }
+    else if (message.u > p.plantacao.u1) {
+        m.u = (message.u - p.plantacao.u1).toFixed(1)
+        //post
+        m.u = m.u + ' %'
+    }
 
-    if (message.uS < p.plantacao.uS0)
-        m.uS = (p.plantacao.uS0 - message.uS).toFixed(1) + ' %/-'
-    else if (message.uS > p.plantacao.uS1)
-        m.uS = (message.uS - p.plantacao.uS1).toFixed(1) + ' %/+'
+    if (message.uS < p.plantacao.uS0) {
+        m.uS = (message.uS - p.plantacao.uS0).toFixed(1)
+        //post
+        m.uS = m.uS + ' %'
+    }
+    else if (message.uS > p.plantacao.uS1) {
+        m.uS = (message.uS - p.plantacao.uS1).toFixed(1)
+        //post
+        m.uS = m.uS + ' %'
+    }
     client_mqtt.publish(topico_alertas + topic, JSON.stringify(m))
 }
 
