@@ -31,8 +31,8 @@ client_mqtt.on('connect', async () => {
                 //     plantacao_aux.plantacao.l0 = 70
                 //     plantacao_aux.plantacao.l1 = 100
                 // }
-                console.log('data.data')
-                console.log(data.data)
+                console.log('item')
+                console.log(item)
                 
                 plantacao_aux.usuario = item.usuario
                 plantacao_aux.plantacao.t0 = data.data.clima.temperaturaMinima
