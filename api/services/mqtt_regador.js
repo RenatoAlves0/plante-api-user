@@ -7,6 +7,8 @@ const topico_regador_c = 'plante_regador_c.'
 const topico_alertas = 'plante_alertas.'
 const PlantacaoPrincipal = require('../models/plantacaoPrincipal')
 const AlertaTemperatura = require('../models/alertaTemperatura')
+const AlertaUmidade = require('../models/alertaUmidade')
+const AlertaUmidadeSolo = require('../models/alertaUmidadeSolo')
 let plantacoes = [], plantacoes_aux = []
 
 client_mqtt.on('connect', async () => {
@@ -47,8 +49,6 @@ client_mqtt.on('connect', async () => {
 })
 
 saveAlertaTemperatura = (valor, usuario, plantacao) => {
-    console.log('valor, usuario, plantacao')
-    console.log(valor, usuario, plantacao)
     const alertaTemperatura = new AlertaTemperatura({
         _id: new mongoose.Types.ObjectId(),
         data: Date.now(),
@@ -58,8 +58,36 @@ saveAlertaTemperatura = (valor, usuario, plantacao) => {
     })
 
     alertaTemperatura.save()
-        .then(result => { res.status(201).json({ message: "Salvo com sucesso!", _id: alertaTemperatura._id }) })
-        .catch(err => { res.status(500).json({ error: err }) })
+        .then(() => console.log('Salvo com sucesso!, id: ' + alertaTemperatura._id))
+        .catch(err => console.log(err))
+}
+
+saveAlertaUmidade = (valor, usuario, plantacao) => {
+    const alertaUmidade = new AlertaUmidade({
+        _id: new mongoose.Types.ObjectId(),
+        data: Date.now(),
+        valor: valor,
+        plantacao: plantacao,
+        usuario: usuario
+    })
+
+    alertaUmidade.save()
+        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidade._id))
+        .catch(err => console.log(err))
+}
+
+saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
+    const alertaUmidadeSolo = new AlertaUmidadeSolo({
+        _id: new mongoose.Types.ObjectId(),
+        data: Date.now(),
+        valor: valor,
+        plantacao: plantacao,
+        usuario: usuario
+    })
+
+    alertaUmidadeSolo.save()
+        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
+        .catch(err => console.log(err))
 }
 
 regar = async (topic, message) => {
@@ -78,8 +106,7 @@ alertas = async (topic, message) => {
         m.t = (message.t - p.plantacao.t0).toFixed(1)
         saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
-    }
-    else if (message.t > p.plantacao.t1) {
+    } else if (message.t > p.plantacao.t1) {
         m.t = (message.t - p.plantacao.t1).toFixed(1)
         saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
@@ -87,23 +114,21 @@ alertas = async (topic, message) => {
 
     if (message.u < p.plantacao.u0) {
         m.u = (message.u - p.plantacao.u0).toFixed(1)
-        //post
+        saveAlertaUmidade(m.u, topic, p.plantacao._id)
         m.u = m.u + ' %'
-    }
-    else if (message.u > p.plantacao.u1) {
+    } else if (message.u > p.plantacao.u1) {
         m.u = (message.u - p.plantacao.u1).toFixed(1)
-        //post
+        saveAlertaUmidade(m.u, topic, p.plantacao._id)
         m.u = m.u + ' %'
     }
 
     if (message.uS < p.plantacao.uS0) {
         m.uS = (message.uS - p.plantacao.uS0).toFixed(1)
-        //post
+        saveAlertaUmidadeSolo(m.uS, topic, p.plantacao._id)
         m.uS = m.uS + ' %'
-    }
-    else if (message.uS > p.plantacao.uS1) {
+    } else if (message.uS > p.plantacao.uS1) {
         m.uS = (message.uS - p.plantacao.uS1).toFixed(1)
-        //post
+        saveAlertaUmidadeSolo(m.uS, topic, p.plantacao._id)
         m.uS = m.uS + ' %'
     }
     client_mqtt.publish(topico_alertas + topic, JSON.stringify(m))
