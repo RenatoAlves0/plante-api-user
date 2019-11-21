@@ -44,6 +44,7 @@ client_mqtt.on('connect', async () => {
 })
 
 saveAlertaTemperatura = (valor, usuario, plantacao) => {
+    console.log('valor, usuario, plantacao')
     console.log(valor, usuario, plantacao)
     const alertaTemperatura = new AlertaTemperatura({
         _id: new mongoose.Types.ObjectId(),
@@ -77,7 +78,7 @@ alertas = async (topic, message) => {
     }
     else if (message.t > p.plantacao.t1) {
         m.t = (message.t - p.plantacao.t1).toFixed(1)
-        //post
+        saveAlertaTemperatura(m.t, topic, p.plantacao._id)
         m.t = m.t + ' ºC'
     }
 
