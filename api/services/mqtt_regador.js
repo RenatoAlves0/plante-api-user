@@ -1,5 +1,6 @@
 const mqtt = require('mqtt')
 const axios = require('axios')
+const mongoose = require('mongoose')
 const client_mqtt = mqtt.connect('mqtt://test.mosquitto.org')
 const topico_sensores_c = 'plante_sensores_c.'
 const topico_regador_c = 'plante_regador_c.'
