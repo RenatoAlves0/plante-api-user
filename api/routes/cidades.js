@@ -41,8 +41,7 @@ router.route('/estado/:estadoId')
             .sort({ nome: 'asc' })
             .exec()
             .then(async (docs) => {
-                let cidades = []
-                cidades.push(await docs.filter((obj) => obj.estado == req.params.estadoId))
+                let cidades = docs.filter((obj) => obj.estado == req.params.estadoId)
                 res.status(200).json({ cidades })
             })
             .catch(err => {

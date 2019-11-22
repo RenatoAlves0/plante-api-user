@@ -29,10 +29,9 @@ router.route('/usuario_plantacao/:usuarioId/:plantacaoId')
     .get(function (req, res) {
         Irrigacao.find()
             .exec()
-            .then(async (docs) => {
-                let alertas = []
-                alertas.push(await docs.filter((obj) => { obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId }))
-                res.status(200).json(alertas[0])
+            .then(docs => {
+                let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId)
+                res.status(200).json(alertas)
             })
             .catch(err => {
                 res.status(500).json({ error: err })

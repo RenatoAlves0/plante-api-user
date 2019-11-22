@@ -27,10 +27,9 @@ router.route('/usuario/:usuarioId')
     .get(function (req, res) {
         PlantacaoPrincipal.find()
             .exec()
-            .then(async (docs) => {
-                let plantacoes = []
-                plantacoes.push(await docs.filter((obj) => obj.usuario == req.params.usuarioId))
-                res.status(200).json(plantacoes[0])
+            .then(docs => {
+                let plantacoes = docs.filter(obj => obj.usuario == req.params.usuarioId)
+                res.status(200).json(plantacoes)
             })
             .catch(err => {
                 res.status(500).json({ error: err })
