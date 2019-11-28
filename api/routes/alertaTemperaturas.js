@@ -58,10 +58,14 @@ router.route('/deletar_por_data/:dataParaDeletar')
     .delete(function (req, res) {
         AlertaTemperatura.find()
             .exec()
-            .then(docs => {
+            .then(async docs => {
                 let alertas = docs.filter(obj => obj.data.split('T')[0] == req.params.dataParaDeletar)
-                alertas.forEach(alerta => {
-                    AlertaTemperatura.remove({ _id: alerta._id }).exec()
+                console.log('req.params.dataParaDeletar')
+                console.log(req.params.dataParaDeletar)
+                console.log('alertas')
+                console.log(alertas)
+                alertas.forEach(async alerta => {
+                   await AlertaTemperatura.remove({ _id: alerta._id }).exec()
                         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
                         .catch(err => { res.status(500).json({ error: err }) })
                 })
