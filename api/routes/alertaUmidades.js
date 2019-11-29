@@ -54,8 +54,25 @@ router.put('/:alertaUmidadeId', (req, res, next) => {
         .catch(err => { res.status(500).json({ error: err }) })
 })
 
+router.route('/deletar_por_data/:array')
+    .delete(function (req, res) {
+        AlertaUmidade.find()
+            .exec()
+            .then(objs => {
+                JSON.parse(req.params.array).forEach(item => {
+                    let alertas = objs.filter(obj => JSON.stringify(obj.data).split('T')[0] == '"' + item)
+                    alertas.forEach(alerta => {
+                        AlertaUmidade.deleteOne({ _id: alerta._id }).exec()
+                            .then(() => { res.status(200).json({ message: "Deletado com sucesso!" }) })
+                            .catch(err => { res.status(500).json({ error: err }) })
+                    })
+                })
+            })
+            .catch(err => { res.status(500).json({ error: err }) })
+    })
+
 router.delete('/:alertaUmidadeId', (req, res, next) => {
-    AlertaUmidade.remove({ _id: req.params.alertaUmidadeId }).exec()
+    AlertaUmidade.deleteOne({ _id: req.params.alertaUmidadeId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

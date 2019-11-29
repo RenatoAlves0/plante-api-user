@@ -41,7 +41,7 @@ router.put('/:usuarioId', (req, res, next) => {
 })
 
 router.delete('/:usuarioId', (req, res, next) => {
-    Usuario.remove({ _id: req.params.usuarioId }).exec()
+    Usuario.deleteOne({ _id: req.params.usuarioId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

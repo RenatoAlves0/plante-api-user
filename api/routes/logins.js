@@ -56,7 +56,7 @@ router.put('/:loginId', (req, res, next) => {
 })
 
 router.delete('/:loginId', (req, res, next) => {
-    Login.remove({ _id: req.params.loginId }).exec()
+    Login.deleteOne({ _id: req.params.loginId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

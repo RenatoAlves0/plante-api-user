@@ -67,7 +67,7 @@ router.put('/:cidadeId', (req, res, next) => {
 })
 
 router.delete('/:cidadeId', (req, res, next) => {
-    Cidade.remove({ _id: req.params.cidadeId }).exec()
+    Cidade.deleteOne({ _id: req.params.cidadeId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

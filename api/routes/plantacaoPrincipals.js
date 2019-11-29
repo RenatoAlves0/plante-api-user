@@ -54,7 +54,7 @@ router.put('/:plantacaoPrincipalId', (req, res, next) => {
 })
 
 router.delete('/:plantacaoPrincipalId', (req, res, next) => {
-    PlantacaoPrincipal.remove({ _id: req.params.plantacaoPrincipalId }).exec()
+    PlantacaoPrincipal.deleteOne({ _id: req.params.plantacaoPrincipalId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

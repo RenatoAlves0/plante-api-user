@@ -43,7 +43,7 @@ router.put('/:estadoId', (req, res, next) => {
 })
 
 router.delete('/:estadoId', (req, res, next) => {
-    Estado.remove({ _id: req.params.estadoId }).exec()
+    Estado.deleteOne({ _id: req.params.estadoId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })

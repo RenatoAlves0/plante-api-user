@@ -54,17 +54,18 @@ router.put('/:alertaTemperaturaId', (req, res, next) => {
         .catch(err => { res.status(500).json({ error: err }) })
 })
 
-router.route('/deletar_por_data/:dataParaDeletar')
+router.route('/deletar_por_data/:array')
     .delete(function (req, res) {
         AlertaTemperatura.find()
             .exec()
-            .then(docs => {
-                let alertas = docs.filter(obj => JSON.stringify(obj.data).split('T')[0] == '"' + req.params.dataParaDeletar)
-                console.log(alertas)
-                alertas.forEach(alerta => {
-                    AlertaTemperatura.deleteOne({ _id: alerta._id }).exec()
-                        .then(() => { res.status(200).json({ message: "Deletado com sucesso!" }) })
-                        .catch(err => { res.status(500).json({ error: err }) })
+            .then(objs => {
+                JSON.parse(req.params.array).forEach(item => {
+                    let alertas = objs.filter(obj => JSON.stringify(obj.data).split('T')[0] == '"' + item)
+                    alertas.forEach(alerta => {
+                        AlertaTemperatura.deleteOne({ _id: alerta._id }).exec()
+                            .then(() => { res.status(200).json({ message: "Deletado com sucesso!" }) })
+                            .catch(err => { res.status(500).json({ error: err }) })
+                    })
                 })
             })
             .catch(err => { res.status(500).json({ error: err }) })
