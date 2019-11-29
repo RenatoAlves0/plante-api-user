@@ -55,29 +55,23 @@ router.put('/:alertaTemperaturaId', (req, res, next) => {
 })
 
 router.route('/deletar_por_data/:dataParaDeletar')
-    .get(function (req, res) {
-        console.log('req.params.dataParaDeletar')
-        console.log(req.params.dataParaDeletar)
+    .delete(function (req, res) {
         AlertaTemperatura.find()
             .exec()
-            .then(async docs => {
-                let alertas = docs.filter(obj => obj.data.split('T')[0] == req.params.dataParaDeletar)
-                console.log('alertas')
+            .then(docs => {
+                let alertas = docs.filter(obj => JSON.stringify(obj.data).split('T')[0] == '"' + req.params.dataParaDeletar)
                 console.log(alertas)
-                alertas.forEach(async alerta => {
-                    await AlertaTemperatura.remove({ _id: alerta._id }).exec()
-                        .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
+                alertas.forEach(alerta => {
+                    AlertaTemperatura.deleteOne({ _id: alerta._id }).exec()
+                        .then(() => { res.status(200).json({ message: "Deletado com sucesso!" }) })
                         .catch(err => { res.status(500).json({ error: err }) })
                 })
-                res.status(200).json(alertas)
             })
-            .catch(err => {
-                res.status(500).json({ error: err })
-            })
+            .catch(err => { res.status(500).json({ error: err }) })
     })
 
 router.delete('/:alertaTemperaturaId', (req, res, next) => {
-    AlertaTemperatura.remove({ _id: req.params.alertaTemperaturaId }).exec()
+    AlertaTemperatura.deleteOne({ _id: req.params.alertaTemperaturaId }).exec()
         .then(result => { res.status(200).json({ message: "Deletado com sucesso!" }) })
         .catch(err => { res.status(500).json({ error: err }) })
 })
