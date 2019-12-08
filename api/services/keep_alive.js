@@ -1,11 +1,11 @@
-import { get } from 'axios'
+const axios = require('axios')
 
 sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 init = async () => {
-    await get('https://plante-api-user.herokuapp.com/keepAlive')
+    await axios.get('https://plante-api-user.herokuapp.com/keepAlive')
     await sleep(600000) //10 minutos
     init()
 }
