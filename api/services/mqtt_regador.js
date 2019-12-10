@@ -92,14 +92,18 @@ saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
 }
 
 updateListIrrigacao = (inicio, usuario, plantacao) => {
-    let irrigacao = {
-        _id: new mongoose.Types.ObjectId(),
-        inicio: inicio,
-        fim: undefined,
-        plantacao: plantacao,
-        usuario: usuario,
+    let i = undefined
+    i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
+    if (i == undefined) {
+        let irrigacao = {
+            _id: new mongoose.Types.ObjectId(),
+            inicio: inicio,
+            fim: undefined,
+            plantacao: plantacao,
+            usuario: usuario,
+        }
+        irrigacoes.push(irrigacao)
     }
-    irrigacoes.push(irrigacao)
 }
 
 saveIrrigacao = (fim, plantacao) => {
