@@ -9,7 +9,8 @@ const PlantacaoPrincipal = require('../models/plantacaoPrincipal')
 const AlertaTemperatura = require('../models/alertaTemperatura')
 const AlertaUmidade = require('../models/alertaUmidade')
 const AlertaUmidadeSolo = require('../models/alertaUmidadeSolo')
-let plantacoes = [], plantacoes_aux = []
+const Irrigacao = require('../models/irrigacao')
+let plantacoes = [], plantacoes_aux = [], irrigacoes = []
 
 client_mqtt.on('connect', async () => {
     let plantacao_aux = { usuario: '', plantacao: { _id: '', t0: '', t1: '', u0: '', u1: '', uS0: '', uS1: '', l0: '', l1: '' } }
@@ -90,12 +91,47 @@ saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
         .catch(err => console.log(err))
 }
 
+updateListIrrigacao = (inicio, usuario, plantacao) => {
+    let irrigacao = {
+        _id: new mongoose.Types.ObjectId(),
+        inicio: inicio,
+        fim: undefined,
+        plantacao: plantacao,
+        usuario: usuario,
+    }
+    irrigacoes.push(irrigacao)
+}
+
+saveIrrigacao = (fim, plantacao) => {
+    console.log('irrigacoes antes')
+    console.log(irrigacoes)
+
+    let i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
+    let irrigacao = new Irrigacao({
+        _id: irrigacoes[i]._id,
+        inicio: irrigacoes[i].inicio,
+        fim: fim,
+        plantacao: irrigacoes[i].plantacao,
+        usuario: irrigacoes[i].usuario,
+    })
+    irrigacao.save()
+        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
+        .catch(err => console.log(err))
+    irrigacoes.splice(i, 1)
+
+    console.log('irrigacoes depois')
+    console.log(irrigacoes)
+}
+
 regar = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
-    if (message.uS < p.plantacao.uS0)
+    if (message.uS < p.plantacao.uS0) {
         client_mqtt.publish(topico_regador_c + topic, '1')
+        updateListIrrigacao(Date.now(), topic, p.plantacao._id)
+    }
     else {
         client_mqtt.publish(topico_regador_c + topic, '0')
+        saveIrrigacao(Date.now(), p.plantacao._id)
     }
 }
 
