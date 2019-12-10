@@ -59,7 +59,7 @@ saveAlertaTemperatura = (valor, usuario, plantacao) => {
     })
 
     alertaTemperatura.save()
-        .then(() => console.log('Salvo com sucesso!, id: ' + alertaTemperatura._id))
+        .then(() => console.log('Alerta de Temperatura salvo com sucesso!, id: ' + alertaTemperatura._id))
         .catch(err => console.log(err))
 }
 
@@ -73,7 +73,7 @@ saveAlertaUmidade = (valor, usuario, plantacao) => {
     })
 
     alertaUmidade.save()
-        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidade._id))
+        .then(() => console.log('Alerta de Umidade salvo com sucesso!, id: ' + alertaUmidade._id))
         .catch(err => console.log(err))
 }
 
@@ -87,17 +87,17 @@ saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
     })
 
     alertaUmidadeSolo.save()
-        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
+        .then(() => console.log('Alerta de Umidade do Solo salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
         .catch(err => console.log(err))
 }
 
-updateListIrrigacao = (inicio, usuario, plantacao) => {
+updateListIrrigacao = (usuario, plantacao) => {
     let i = undefined
     if (irrigacoes[0]) i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
     if (i == undefined) {
         let irrigacao = {
             _id: new mongoose.Types.ObjectId(),
-            inicio: inicio,
+            inicio: Date.now(),
             fim: undefined,
             plantacao: plantacao,
             usuario: usuario,
@@ -106,36 +106,33 @@ updateListIrrigacao = (inicio, usuario, plantacao) => {
     }
 }
 
-saveIrrigacao = (fim, plantacao) => {
-    console.log('irrigacoes antes')
-    console.log(irrigacoes)
-
-    let i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
-    let irrigacao = new Irrigacao({
-        _id: irrigacoes[i]._id,
-        inicio: irrigacoes[i].inicio,
-        fim: fim,
-        plantacao: irrigacoes[i].plantacao,
-        usuario: irrigacoes[i].usuario,
-    })
-    irrigacao.save()
-        .then(() => console.log('Salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
-        .catch(err => console.log(err))
-    irrigacoes.splice(i, 1)
-
-    console.log('irrigacoes depois')
-    console.log(irrigacoes)
+saveIrrigacao = (plantacao) => {
+    let i = undefined
+    i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
+    if (i != undefined) {
+        let irrigacao = new Irrigacao({
+            _id: irrigacoes[i]._id,
+            inicio: irrigacoes[i].inicio,
+            fim: Date.now(),
+            plantacao: irrigacoes[i].plantacao,
+            usuario: irrigacoes[i].usuario,
+        })
+        irrigacao.save()
+            .then(() => console.log('Irrigação salva com sucesso!, id: ' + irrigacao._id))
+            .catch(err => console.log(err))
+        irrigacoes.splice(i, 1)
+    }
 }
 
 regar = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.uS < p.plantacao.uS0) {
-        // client_mqtt.publish(topico_regador_c + topic, '1')
-        // updateListIrrigacao(Date.now(), topic, p.plantacao._id)
+        client_mqtt.publish(topico_regador_c + topic, '1')
+        updateListIrrigacao(topic, p.plantacao._id)
     }
     else {
-        // client_mqtt.publish(topico_regador_c + topic, '0')
-        // saveIrrigacao(Date.now(), p.plantacao._id)
+        client_mqtt.publish(topico_regador_c + topic, '0')
+        saveIrrigacao(p.plantacao._id)
     }
 }
 
