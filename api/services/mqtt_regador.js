@@ -93,7 +93,7 @@ saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
 
 updateListIrrigacao = (inicio, usuario, plantacao) => {
     let i = undefined
-    i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
+    if (irrigacoes[0]) i = irrigacoes.findIndex(obj => obj.plantacao == plantacao)
     if (i == undefined) {
         let irrigacao = {
             _id: new mongoose.Types.ObjectId(),
@@ -130,12 +130,12 @@ saveIrrigacao = (fim, plantacao) => {
 regar = async (topic, message) => {
     let p = await plantacoes.find(obj => obj.usuario == topic)
     if (message.uS < p.plantacao.uS0) {
-        client_mqtt.publish(topico_regador_c + topic, '1')
-        updateListIrrigacao(Date.now(), topic, p.plantacao._id)
+        // client_mqtt.publish(topico_regador_c + topic, '1')
+        // updateListIrrigacao(Date.now(), topic, p.plantacao._id)
     }
     else {
-        client_mqtt.publish(topico_regador_c + topic, '0')
-        saveIrrigacao(Date.now(), p.plantacao._id)
+        // client_mqtt.publish(topico_regador_c + topic, '0')
+        // saveIrrigacao(Date.now(), p.plantacao._id)
     }
 }
 
