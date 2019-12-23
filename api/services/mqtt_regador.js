@@ -21,19 +21,19 @@ client_mqtt.on('connect', async () => {
     plantacoes_aux.forEach(async item => {
         await axios.get('https://plante-api.herokuapp.com/plantas/' + item.plantacao.cultura)
             .then(data => {
-                // if (data.data.luz.intensidade == 'Sombra') {
-                //     plantacao_aux.plantacao.l0 = 0
-                //     plantacao_aux.plantacao.l1 = 20
-                // } else if (data.data.luz.intensidade == 'Fraca') {
-                //     plantacao_aux.plantacao.l0 = 20
-                //     plantacao_aux.plantacao.l1 = 40
-                // } else if (data.data.luz.intensidade == 'Média') {
-                //     plantacao_aux.plantacao.l0 = 40
-                //     plantacao_aux.plantacao.l1 = 70
-                // } else {
-                //     plantacao_aux.plantacao.l0 = 70
-                //     plantacao_aux.plantacao.l1 = 100
-                // }
+                if (data.data.luz.intensidade == 'Sombra') {
+                    plantacao_aux.plantacao.l0 = 0
+                    plantacao_aux.plantacao.l1 = 20
+                } else if (data.data.luz.intensidade == 'Fraca') {
+                    plantacao_aux.plantacao.l0 = 20
+                    plantacao_aux.plantacao.l1 = 40
+                } else if (data.data.luz.intensidade == 'Média') {
+                    plantacao_aux.plantacao.l0 = 40
+                    plantacao_aux.plantacao.l1 = 70
+                } else {
+                    plantacao_aux.plantacao.l0 = 70
+                    plantacao_aux.plantacao.l1 = 100
+                }
 
                 plantacao_aux.usuario = item.usuario
                 plantacao_aux.plantacao._id = item.plantacao._id
@@ -44,7 +44,7 @@ client_mqtt.on('connect', async () => {
                 plantacao_aux.plantacao.uS0 = data.data.solo.umidadeMinima
                 plantacao_aux.plantacao.uS1 = data.data.solo.umidadeMaxima
             })
-        await plantacoes.push(plantacao_aux)
+        plantacoes.push(plantacao_aux)
         client_mqtt.subscribe(topico_sensores_c + item.usuario)
     })
 })
@@ -88,6 +88,20 @@ saveAlertaUmidadeSolo = (valor, usuario, plantacao) => {
 
     alertaUmidadeSolo.save()
         .then(() => console.log('Alerta de Umidade do Solo salvo com sucesso!, id: ' + alertaUmidadeSolo._id))
+        .catch(err => console.log(err))
+}
+
+saveAlertaLuminosidade = (valor, usuario, plantacao) => {
+    const alertaLuminosidade = new AlertaLuminosidade({
+        _id: new mongoose.Types.ObjectId(),
+        data: Date.now(),
+        valor: valor,
+        plantacao: plantacao,
+        usuario: usuario
+    })
+
+    alertaLuminosidade.save()
+        .then(() => console.log('Alerta de Luminosidade salvo com sucesso!, id: ' + alertaLuminosidade._id))
         .catch(err => console.log(err))
 }
 
@@ -167,6 +181,18 @@ alertas = async (topic, message) => {
         m.uS = (message.uS - p.plantacao.uS1).toFixed(1)
         saveAlertaUmidadeSolo(m.uS, topic, p.plantacao._id)
         m.uS = m.uS + ' %'
+    }
+
+    if (message.l < p.plantacao.l0 &&
+        new Date().getHours() >= 6 && new Date().getHours() <= 17) {
+        m.l = (message.l - p.plantacao.l0).toFixed(1)
+        saveAlertaLuminosidade(m.l, topic, p.plantacao._id)
+        m.l = m.l + ' %'
+    } else if (message.l > p.plantacao.l1 &&
+        new Date().getHours() >= 6 && new Date().getHours() <= 17) {
+        m.l = (message.l - p.plantacao.l1).toFixed(1)
+        saveAlertaLuminosidade(m.l, topic, p.plantacao._id)
+        m.l = m.l + ' %'
     }
     client_mqtt.publish(topico_alertas + topic, JSON.stringify(m))
 }
