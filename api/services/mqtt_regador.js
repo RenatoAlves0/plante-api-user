@@ -9,6 +9,7 @@ const PlantacaoPrincipal = require('../models/plantacaoPrincipal')
 const AlertaTemperatura = require('../models/alertaTemperatura')
 const AlertaUmidade = require('../models/alertaUmidade')
 const AlertaUmidadeSolo = require('../models/alertaUmidadeSolo')
+const AlertaLuminosidade = require('../models/alertaLuminosidade')
 const Irrigacao = require('../models/irrigacao')
 let plantacoes = [], plantacoes_aux = [], irrigacoes = []
 
