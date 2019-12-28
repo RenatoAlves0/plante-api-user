@@ -82,7 +82,7 @@ router.route('/dias/:usuarioId/:plantacaoId/:ano/:mes')
                         item.data.getMonth() + 1 == req.params.mes) mes.push(item)
                 })
                 let dias = [...new Set(mes.map(x => x.data.toDateString()))]
-                res.status(200).json({ dias })
+                res.status(200).json(dias)
             })
             .catch(err => {
                 res.status(500).json({ error: err })
