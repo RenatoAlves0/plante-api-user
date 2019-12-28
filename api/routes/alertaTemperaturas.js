@@ -44,7 +44,7 @@ router.route('/anos/:usuarioId/:plantacaoId')
             .exec()
             .then(docs => {
                 let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId)
-                let anos = [...new Set(alertas.map(x => x.data.getFullYear()))]
+                let anos = [...new Set(alertas.map(x => x.data.getFullYear() + ''))]
                 res.status(200).json(anos)
             })
             .catch(err => {
@@ -62,7 +62,7 @@ router.route('/meses/:usuarioId/:plantacaoId/:ano')
                 alertas.forEach(item => {
                     if (item.data.getFullYear() == req.params.ano) ano.push(item)
                 })
-                let meses = [...new Set(ano.map(x => x.data.getMonth() + 1))]
+                let meses = [...new Set(ano.map(x => x.data.getMonth() + 1 + ''))]
                 res.status(200).json(meses)
             })
             .catch(err => {
