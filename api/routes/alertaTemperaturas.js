@@ -38,6 +38,57 @@ router.route('/usuario_plantacao/:usuarioId/:plantacaoId')
             })
     })
 
+router.route('/anos/:usuarioId/:plantacaoId')
+    .get(function (req, res) {
+        AlertaTemperatura.find()
+            .exec()
+            .then(docs => {
+                let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId)
+                let anos = [...new Set(alertas.map(x => x.data.getFullYear()))]
+                res.status(200).json(anos)
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
+router.route('/meses/:usuarioId/:plantacaoId/:ano')
+    .get(function (req, res) {
+        AlertaTemperatura.find()
+            .exec()
+            .then(docs => {
+                let ano = []
+                let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId)
+                alertas.forEach(item => {
+                    if (item.data.getFullYear() == req.params.ano) ano.push(item)
+                })
+                let meses = [...new Set(ano.map(x => x.data.getMonth() + 1))]
+                res.status(200).json(meses)
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
+router.route('/dias/:usuarioId/:plantacaoId/:ano/:mes')
+    .get(function (req, res) {
+        AlertaTemperatura.find()
+            .exec()
+            .then(docs => {
+                let mes = []
+                let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId && obj.plantacao == req.params.plantacaoId)
+                alertas.forEach(item => {
+                    if (item.data.getFullYear() == req.params.ano &&
+                        item.data.getMonth() + 1 == req.params.mes) mes.push(item)
+                })
+                let dias = [...new Set(mes.map(x => x.data.toDateString()))]
+                res.status(200).json({ dias })
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
 router.get('/:alertaTemperaturaId', (req, res, next) => {
     AlertaTemperatura.findById(req.params.alertaTemperaturaId)
         .exec()
