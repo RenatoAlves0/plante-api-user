@@ -89,6 +89,21 @@ router.route('/dias/:usuarioId/:plantacaoId/:ano/:mes')
             })
     })
 
+router.route('/porDia/:usuarioId/:plantacaoId/:dia')
+    .get(function (req, res) {
+        AlertaTemperatura.find()
+            .exec()
+            .then(docs => {
+                let alertas = docs.filter(obj => obj.usuario == req.params.usuarioId
+                    && obj.plantacao == req.params.plantacaoId
+                    && obj.data.toDateString() == req.params.dia)
+                res.status(200).json(alertas)
+            })
+            .catch(err => {
+                res.status(500).json({ error: err })
+            })
+    })
+
 router.get('/:alertaTemperaturaId', (req, res, next) => {
     AlertaTemperatura.findById(req.params.alertaTemperaturaId)
         .exec()
