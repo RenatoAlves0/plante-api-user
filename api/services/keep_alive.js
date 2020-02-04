@@ -6,7 +6,7 @@ sleep = (ms) => {
 
 init = async () => {
     await axios.get('https://plante-api-user.herokuapp.com/keepAlive')
-    await sleep(600000) //10 minutos
+    await sleep(3 * 600000) //30 minutos
     init()
 }
 

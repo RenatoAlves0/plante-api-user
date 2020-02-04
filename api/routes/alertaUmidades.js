@@ -38,7 +38,7 @@ router.route('/usuario_plantacao/:usuarioId/:plantacaoId')
             })
     })
 
-    router.route('/anos/:usuarioId/:plantacaoId')
+router.route('/anos/:usuarioId/:plantacaoId')
     .get(function (req, res) {
         AlertaUmidade.find()
             .exec()

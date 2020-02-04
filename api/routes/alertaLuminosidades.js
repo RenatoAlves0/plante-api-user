@@ -24,7 +24,6 @@ router.get('/', (req, res, next) => {
         .catch(err => { res.status(500).json({ error: err }) })
 })
 
-
 router.route('/usuario_plantacao/:usuarioId/:plantacaoId')
     .get(function (req, res) {
         AlertaLuminosidade.find()
@@ -38,7 +37,7 @@ router.route('/usuario_plantacao/:usuarioId/:plantacaoId')
             })
     })
 
-    router.route('/anos/:usuarioId/:plantacaoId')
+router.route('/anos/:usuarioId/:plantacaoId')
     .get(function (req, res) {
         AlertaLuminosidade.find()
             .exec()
