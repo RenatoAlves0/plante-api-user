@@ -8,7 +8,7 @@ router.post('/', (req, res, next) => {
         _id: new mongoose.Types.ObjectId(),
         nome: req.body.nome,
         sobrenome: req.body.sobrenome,
-        nascimento: req.body.nascimento
+        cidade: req.body.cidade,
     })
 
     usuario.save()
@@ -19,6 +19,7 @@ router.post('/', (req, res, next) => {
 router.get('/', (req, res, next) => {
     Usuario.find()
         .sort({ nome: 'asc' })
+        .populate('cidade')
         .exec()
         .then(docs => { res.status(200).json(docs) })
         .catch(err => { res.status(500).json({ error: err }) })
@@ -26,6 +27,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:usuarioId', (req, res, next) => {
     Usuario.findById(req.params.usuarioId)
+        .populate('cidade')
         .exec()
         .then(doc => {
             if (doc) { res.status(200).json(doc) }
