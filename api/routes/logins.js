@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const Login = require('../models/login')
 
 router.route('/logar')
-    .get(function (req, res) {
+    .get((req, res) => {
         Login.findOne({ login: req.query.login, senha: req.query.senha })
             .exec()
             .then(doc => {
