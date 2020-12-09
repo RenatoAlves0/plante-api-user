@@ -4,8 +4,6 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const mqtt_regador = require('./api/services/mqtt_regador')
-const coap_server = require('./api/services/coap_server')
-const coap_client = require('./api/services/coap_client')
 const keep_alive = require('./api/services/keep_alive')
 
 const cidadeRoutes = require('./api/routes/cidades')
